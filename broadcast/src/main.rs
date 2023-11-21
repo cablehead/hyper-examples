@@ -1,20 +1,12 @@
-use futures::TryStreamExt;
-
-use std::convert::Infallible;
-use std::net::SocketAddr;
+use std::{convert::Infallible, net::SocketAddr};
 
 use bytes::Bytes;
-use http_body_util::combinators::BoxBody;
-use http_body_util::BodyExt;
-use http_body_util::StreamBody;
-use hyper::body::Frame;
-use hyper::{service::service_fn, Response};
+use futures::TryStreamExt;
+use http_body_util::{combinators::BoxBody, BodyExt, StreamBody};
+use hyper::{body::Frame, service::service_fn, Response};
 use hyper_util::rt::TokioIo;
-use tokio::net::TcpListener;
-use tokio::sync::broadcast;
-use tokio::time;
-use tokio_stream::wrappers::errors::BroadcastStreamRecvError;
-use tokio_stream::wrappers::BroadcastStream;
+use tokio::{net::TcpListener, sync::broadcast, time};
+use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
 
 async fn hello(
     rx: broadcast::Receiver<Bytes>,
