@@ -8,7 +8,7 @@ use http_body_util::combinators::BoxBody;
 use http_body_util::BodyExt;
 use http_body_util::StreamBody;
 use hyper::body::Frame;
-use hyper::{service::service_fn, Response, StatusCode};
+use hyper::{service::service_fn, Response};
 use hyper_util::rt::TokioIo;
 use tokio::net::TcpListener;
 use tokio::sync::broadcast;
@@ -20,14 +20,7 @@ async fn hello(
     rx: broadcast::Receiver<Bytes>,
 ) -> Result<Response<BoxBody<Bytes, BroadcastStreamRecvError>>, Infallible> {
     let stream = StreamBody::new(BroadcastStream::new(rx).map_ok(Frame::data));
-    let boxed_body = stream.boxed();
-
-    let response = Response::builder()
-        .status(StatusCode::OK)
-        .body(boxed_body)
-        .unwrap();
-
-    Ok(response)
+    Ok(Response::new(stream.boxed()))
 }
 
 #[tokio::main]
