@@ -53,17 +53,12 @@ async fn hello(_: Request<hyper::body::Incoming>) -> Result<Response<HelloWorldB
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-
     let listener = TcpListener::bind(addr).await?;
-
     loop {
         let (stream, _) = listener.accept().await?;
-
         let io = TokioIo::new(stream);
-
         tokio::task::spawn(async move {
             if let Err(err) =
-                // hyper::server::conn::http2::Builder::new(hyper_util::rt::TokioExecutor::new())
                 hyper::server::conn::http1::Builder::new()
                     .serve_connection(io, service_fn(hello))
                     .await
